@@ -16,10 +16,15 @@ Our mission is to harness the power of data and AI to drive smarter decisions, i
 **SmartServe AI- Food demand prediction, Optimize production, Waste reduction.**
 
 ### Key Solutions
+
 🍽️ Predict meal demand using AI and historical data
+
 🌦️ Integrate weather, holidays, and event data for accuracy
+
 ♻️ Reduce overproduction and CO₂ emissions
+
 💶 Track cost and sustainability savings in real time
+
 📊 Intuitive dashboards for chefs and managers
 
 ✨ Every project we take is built for clarity, agility, and measurable value — because innovation should deliver results, not just buzzwords.
