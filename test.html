@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>GroceScan — Smart Grocery AI Assistant</title>
+    <link rel="icon" href="grocescan.JPG" type="image/jpeg">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description"
+        content="GroceScan AI helps you scan food & cosmetics, predict freshness, get storage tips, and understand health impact using AI." />
+
+    <style>
+        :root {
+            --bg: #050816;
+            --bg-soft: #0b1020;
+            --accent: #22c55e;
+            --accent-soft: rgba(34, 197, 94, 0.1);
+            --accent-2: #38bdf8;
+            --text-main: #f9fafb;
+            --text-soft: #9ca3af;
+            --card-bg: #020617;
+            --border-subtle: #1f2937;
+            --danger: #f97373;
+            --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.7);
+            --radius-xl: 18px;
+            --radius-full: 999px;
+            --max-width: 1040px;
+            --transition: 200ms ease-out;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro", "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top, #1f2937 0, #020617 45%);
+            color: var(--text-main);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        main {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 16px 16px 64px;
+        }
+
+        /* Top nav */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            backdrop-filter: blur(14px);
+            background: linear-gradient(to bottom, rgba(2, 6, 23, 0.95), transparent);
+            border-bottom: 1px solid rgba(55, 65, 81, 0.3);
+            margin: -16px -16px 16px;
+            padding: 10px 16px 8px;
+        }
+
+        .nav-inner {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: var(--radius-full);
+            background: radial-gradient(circle at 30% 0%, #bbf7d0, #22c55e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 28px rgba(34, 197, 94, 0.7);
+            font-size: 18px;
+            overflow: hidden;
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .brand-title {
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            font-size: 16px;
+        }
+
+        .brand-sub {
+            font-size: 11px;
+            color: var(--text-soft);
+        }
+
+        .nav-links {
+            display: none;
+            gap: 18px;
+            font-size: 13px;
+            color: var(--text-soft);
+        }
+
+        .nav-links button {
+            all: unset;
+            cursor: pointer;
+            padding: 4px 0;
+            position: relative;
+        }
+
+        .nav-links button::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -3px;
+            width: 0;
+            height: 2px;
+            border-radius: 999px;
+            background: linear-gradient(to right, var(--accent), var(--accent-2));
+            transition: width var(--transition);
+        }
+
+        .nav-links button:hover::after {
+            width: 100%;
+        }
+
+        .nav-cta {
+            display: none;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            font-size: 11px;
+            border-radius: var(--radius-full);
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(55, 65, 81, 0.8);
+            color: var(--text-soft);
+        }
+
+        .pill-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: radial-gradient(circle, #4ade80, #22c55e);
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.8);
+        }
+
+        /* Hero section */
+        .hero {
+            display: grid;
+            gap: 24px;
+            padding-top: 6px;
+        }
+
+        .hero-left {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 10px 4px 4px;
+            border-radius: var(--radius-full);
+            background: rgba(6, 95, 70, 0.3);
+            border: 1px solid rgba(16, 185, 129, 0.6);
+            box-shadow: 0 12px 40px rgba(5, 150, 105, 0.4);
+            font-size: 11px;
+            color: #a7f3d0;
+            align-self: flex-start;
+        }
+
+        .eyebrow-tag {
+            background: #22c55e;
+            color: #022c22;
+            padding: 4px 9px;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        h1 {
+            font-size: 28px;
+            line-height: 1.15;
+            letter-spacing: -0.03em;
+        }
+
+        h1 span.highlight {
+            background: radial-gradient(circle at 0 0, rgba(34, 197, 94, 0.35), transparent 60%);
+            padding: 0 3px;
+            border-radius: 9px;
+        }
+
+        .hero-sub {
+            font-size: 14px;
+            color: var(--text-soft);
+            max-width: 520px;
+        }
+
+        .hero-sub strong {
+            color: #e5e7eb;
+            font-weight: 600;
+        }
+
+        .hero-cta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 4px;
+            align-items: center;
+        }
+
+        .btn {
+            border-radius: var(--radius-full);
+            padding: 9px 16px;
+            font-size: 13px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            transition: transform var(--transition), box-shadow var(--transition), background var(--transition), border-color var(--transition), color var(--transition);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            box-shadow: 0 16px 45px rgba(34, 197, 94, 0.6);
+            color: #022c22;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 18px 55px rgba(34, 197, 94, 0.75);
+        }
+
+        .btn-ghost {
+            background: rgba(15, 23, 42, 0.95);
+            border-color: rgba(55, 65, 81, 0.9);
+            color: var(--text-soft);
+        }
+
+        .btn-ghost:hover {
+            border-color: rgba(148, 163, 184, 0.9);
+            color: #e5e7eb;
+            transform: translateY(-1px);
+        }
+
+        /* Store badges */
+        .store-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .store-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: #050509;
+            border: 1px solid #111827;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
+        }
+
+        .store-badge:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 14px 32px rgba(0, 0, 0, 0.8);
+            background: #000000;
+        }
+
+        .store-badge-icon {
+            font-size: 20px;
+        }
+
+        .store-badge-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+
+        .store-badge-text span:first-child {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: #d1d5db;
+        }
+
+        .store-badge-text span:last-child {
+            font-size: 14px;
+            font-weight: 600;
+            color: #f9fafb;
+        }
+
+        .hero-mini {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 6px;
+            font-size: 11px;
+            color: var(--text-soft);
+        }
+
+        .hero-mini span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(31, 41, 55, 0.9);
+        }
+
+        /* Phone mockup */
+        .hero-right {
+            display: flex;
+            justify-content: center;
+        }
+
+        .phone {
+            width: min(280px, 85vw);
+            border-radius: 32px;
+            border: 1px solid rgba(148, 163, 184, 0.5);
+            background: radial-gradient(circle at top, #0f172a, #020617);
+            box-shadow: var(--shadow-soft);
+            padding: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .phone-notch {
+            width: 38%;
+            height: 14px;
+            border-radius: 0 0 16px 16px;
+            background: rgba(15, 23, 42, 0.9);
+            margin: 0 auto 10px;
+        }
+
+        .phone-screen {
+            border-radius: 24px;
+            border: 1px solid rgba(30, 64, 175, 0.9);
+            background: radial-gradient(circle at top, rgba(56, 189, 248, 0.25), #020617);
+            padding: 12px;
+            font-size: 11px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .phone-chip {
+            align-self: flex-start;
+            padding: 4px 9px;
+            border-radius: var(--radius-full);
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(37, 99, 235, 0.7);
+            color: #bfdbfe;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .phone-chip span.icon {
+            width: 18px;
+            height: 18px;
+            border-radius: var(--radius-full);
+            background: rgba(56, 189, 248, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+
+        .phone-product-card {
+            border-radius: 14px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(55, 65, 81, 0.9);
+            display: grid;
+            grid-template-columns: 42% 1fr;
+            gap: 10px;
+            padding: 8px;
+            align-items: center;
+        }
+
+        .phone-product-photo {
+            aspect-ratio: 3 / 4;
+            border-radius: 12px;
+            background: radial-gradient(circle at 30% 0%, #bbf7d0, #22c55e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #052e16;
+            font-weight: 700;
+            font-size: 11px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .phone-product-photo::after {
+            content: "Tap to scan";
+            position: absolute;
+            bottom: 4px;
+            left: 6px;
+            right: 6px;
+            font-size: 9px;
+            border-radius: 999px;
+            padding: 2px 6px;
+            background: rgba(15, 23, 42, 0.85);
+            color: #bbf7d0;
+            text-align: center;
+        }
+
+        .phone-product-meta h3 {
+            font-size: 12px;
+            margin-bottom: 2px;
+        }
+
+        .phone-badge-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 4px;
+        }
+
+        .badge {
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 999px;
+            border: 1px solid rgba(55, 65, 81, 0.8);
+            background: rgba(15, 23, 42, 0.9);
+            color: #e5e7eb;
+            white-space: nowrap;
+        }
+
+        .badge.ok {
+            border-color: rgba(34, 197, 94, 0.9);
+            color: #bbf7d0;
+        }
+
+        .badge.warn {
+            border-color: rgba(249, 115, 22, 0.9);
+            color: #fed7aa;
+        }
+
+        .phone-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .metric-card {
+            border-radius: 10px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(31, 41, 55, 0.9);
+            padding: 5px;
+            font-size: 9px;
+        }
+
+        .metric-label {
+            color: var(--text-soft);
+            margin-bottom: 2px;
+        }
+
+        .metric-value {
+            font-weight: 600;
+        }
+
+        .metric-value.danger {
+            color: var(--danger);
+        }
+
+        .metric-value.safe {
+            color: #4ade80;
+        }
+
+        .phone-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            font-size: 9px;
+            color: var(--text-soft);
+        }
+
+        .phone-footer-pill {
+            padding: 3px 7px;
+            border-radius: var(--radius-full);
+            border: 1px solid rgba(55, 65, 81, 0.9);
+            background: rgba(15, 23, 42, 0.9);
+        }
+
+        .phone-glow {
+            position: absolute;
+            inset: 40% -50%;
+            background: radial-gradient(circle at center, rgba(34, 197, 94, 0.4), transparent 60%);
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        /* Sections */
+        section {
+            margin-top: 40px;
+        }
+
+        .section-heading {
+            font-size: 18px;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .section-subtitle {
+            font-size: 13px;
+            color: var(--text-soft);
+            max-width: 520px;
+        }
+
+        .grid {
+            display: grid;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .grid-2 {
+            grid-template-columns: 1fr;
+        }
+
+        .card {
+            border-radius: var(--radius-xl);
+            background: var(--card-bg);
+            border: 1px solid var(--border-subtle);
+            padding: 14px 14px 12px;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.65);
+            position: relative;
+            overflow: hidden;
+            font-size: 13px;
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            inset: -40%;
+            background: radial-gradient(circle at 0 0, rgba(34, 197, 94, 0.06), transparent 65%);
+            opacity: 0;
+            transition: opacity var(--transition);
+            pointer-events: none;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .card-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 9px;
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(55, 65, 81, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .card-tag-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 6px;
+            font-size: 11px;
+            color: var(--text-soft);
+        }
+
+        .chip-soft {
+            padding: 3px 7px;
+            border-radius: 999px;
+            border: 1px solid rgba(55, 65, 81, 0.9);
+        }
+
+        /* Step row */
+        .step-row {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 14px;
+            font-size: 12px;
+        }
+
+        .step {
+            border-radius: var(--radius-xl);
+            border: 1px dashed rgba(55, 65, 81, 0.9);
+            background: rgba(15, 23, 42, 0.9);
+            padding: 10px;
+        }
+
+        .step-num {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent-2);
+            margin-bottom: 4px;
+        }
+
+        .step h4 {
+            font-size: 12px;
+            margin-bottom: 2px;
+        }
+
+        /* Audience pills */
+        .audience-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+            font-size: 12px;
+        }
+
+        .audience-pill {
+            padding: 5px 10px;
+            border-radius: 999px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(55, 65, 81, 0.9);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-soft);
+        }
+
+        /* FAQ */
+        .faq-list {
+            margin-top: 16px;
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border-subtle);
+            background: rgba(15, 23, 42, 0.95);
+            box-shadow: 0 16px 40px rgba(15, 23, 42, 0.9);
+            overflow: hidden;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid rgba(31, 41, 55, 0.9);
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+
+        .faq-question {
+            width: 100%;
+            text-align: left;
+            padding: 10px 12px;
+            background: none;
+            border: none;
+            color: #e5e7eb;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
+        .faq-question span.q {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .faq-toggle {
+            font-size: 16px;
+            color: var(--text-soft);
+            transition: transform var(--transition);
+        }
+
+        .faq-item.open .faq-toggle {
+            transform: rotate(90deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            padding: 0 12px;
+            font-size: 12px;
+            color: var(--text-soft);
+            transition: max-height 220ms ease-out, padding 220ms ease-out;
+        }
+
+        .faq-item.open .faq-answer {
+            max-height: 220px;
+            padding: 0 12px 10px;
+        }
+
+        /* Contact */
+        .contact-grid {
+            display: grid;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .contact-card {
+            border-radius: var(--radius-xl);
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--border-subtle);
+            padding: 14px;
+            box-shadow: 0 14px 35px rgba(15, 23, 42, 0.85);
+            font-size: 13px;
+        }
+
+        .contact-note {
+            font-size: 11px;
+            color: var(--text-soft);
+            margin-bottom: 8px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        .field label {
+            color: #e5e7eb;
+        }
+
+        .field input,
+        .field textarea {
+            background: rgba(15, 23, 42, 0.95);
+            border-radius: 11px;
+            border: 1px solid rgba(55, 65, 81, 0.9);
+            padding: 7px 9px;
+            font-size: 12px;
+            color: #e5e7eb;
+            outline: none;
+        }
+
+        .field input:focus,
+        .field textarea:focus {
+            border-color: rgba(56, 189, 248, 0.8);
+            box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.6);
+        }
+
+        .field textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        .contact-meta {
+            font-size: 11px;
+            color: var(--text-soft);
+            margin-top: 6px;
+        }
+
+        footer {
+            margin-top: 32px;
+            font-size: 11px;
+            color: var(--text-soft);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 8px;
+            border-top: 1px solid rgba(31, 41, 55, 0.9);
+            padding-top: 10px;
+        }
+
+        footer a {
+            color: var(--accent-2);
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 3px;
+        }
+
+        /* Larger screens */
+        @media (min-width: 720px) {
+            main {
+                padding: 24px 20px 64px;
+            }
+
+            .hero {
+                grid-template-columns: minmax(0, 3fr) minmax(0, 2.4fr);
+                align-items: center;
+                gap: 30px;
+                padding-top: 16px;
+            }
+
+            h1 {
+                font-size: 36px;
+            }
+
+            .hero-sub {
+                font-size: 15px;
+            }
+
+            section {
+                margin-top: 48px;
+            }
+
+            .grid-2 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .contact-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .nav-links {
+                display: flex;
+            }
+
+            .nav-cta {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="nav">
+        <div class="nav-inner">
+            <div class="brand">
+                <div class="brand-icon">
+                    <img src="grocescan.JPG" alt="Logo"
+                        style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                </div>
+                <div class="brand-text">
+                    <div class="brand-title">GroceScan</div>
+                    <div class="brand-sub">Predict Freshness. Prevent Waste.</div>
+                </div>
+            </div>
+
+            <div class="nav-links">
+                <button data-scroll="#how-it-works">How it works</button>
+                <button data-scroll="#features">Features</button>
+                <button data-scroll="#health">Health & Safety</button>
+                <button data-scroll="#faq">FAQ</button>
+            </div>
+
+            <div class="nav-cta">
+                <div class="pill">
+                    <span class="pill-dot"></span>
+                    Know Before You Buy
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- HERO -->
+        <section class="hero" id="top">
+            <div class="hero-left">
+                <div class="eyebrow">
+                    <span class="eyebrow-tag">New</span>
+                    Your personal AI safety coach for shopping 🛒
+                </div>
+
+                <h1>
+                    Scan your perishable & packaged food or cosmetics.<br />
+                    <span class="highlight">Know how safe & fresh they are.</span>
+                </h1>
+
+                <p class="hero-sub">
+                    <strong>GroceScan</strong> turns your phone camera into a smart assistant.
+                    Just take a photo for perishable food or scan a barcode for packaged food or cosmetics, and get:
+                    storage suggestions, how many days a product stays good, and simple
+                    <strong>health impact</strong> insights before you buy. <strong>It empowers every household
+                        to shop sustainably using AI predictions and real-time freshness intelligence.</strong>
+                </p>
+
+                <div class="hero-cta-row">
+                    <button class="btn btn-primary" data-scroll="#how-it-works">
+                        ▶ See how it works
+                    </button>
+
+                    <div class="store-badges">
+                        <a href="#" class="store-badge">
+                            <span class="store-badge-icon"></span>
+                            <span class="store-badge-text">
+                                <span>Download on the</span>
+                                <span>App Store</span>
+                            </span>
+                        </a>
+
+                        <a href="#" class="store-badge">
+                            <span class="store-badge-icon">▶</span>
+                            <span class="store-badge-text">
+                                <span>Get it on</span>
+                                <span>Google Play</span>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="hero-mini">
+                    <span>📸 Perishable food freshness prediction</span>
+                    <span>🏷️ Barcode scan for packaged food & cosmetics</span>
+                    <span>🌡️ Smart storage advice (fridge/freezer/room)</span>
+                </div>
+            </div>
+
+            <!-- PHONE MOCKUP -->
+            <div class="hero-right">
+                <div class="phone">
+                    <div class="phone-notch"></div>
+                    <div class="phone-screen" id="demoScreen">
+                        <div class="phone-chip">
+                            <span class="icon">🤖</span>
+                            Gemini on Google Cloud is analyzing your product…
+                        </div>
+
+                        <div class="phone-product-card">
+                            <div class="phone-product-photo">Fresh Salmon</div>
+                            <div class="phone-product-meta">
+                                <h3>Fresh salmon fillet</h3>
+                                <div class="phone-badge-row">
+                                    <span class="badge ok">Good to eat</span>
+                                    <span class="badge warn">Use soon</span>
+                                </div>
+                                <div class="phone-metrics">
+                                    <div class="metric-card">
+                                        <div class="metric-label">Safe for</div>
+                                        <div class="metric-value safe">2–3 days</div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-label">Best storage</div>
+                                        <div class="metric-value">Fridge • 2–4°C</div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-label">Health note</div>
+                                        <div class="metric-value danger">Avoid if pregnancy</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="phone-footer">
+                            <div class="phone-footer-pill">Next: scan barcode on yogurt</div>
+                            <div>⚡ 1.2s analysis</div>
+                        </div>
+                    </div>
+                    <div class="phone-glow"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- HOW IT WORKS -->
+        <section id="how-it-works">
+            <h2 class="section-heading">How the app works in the shop</h2>
+            <p class="section-subtitle">
+                You don’t need to type anything. Just open the app, use the camera, and FreshScan AI does the thinking.
+            </p>
+
+            <div class="step-row">
+                <div class="step">
+                    <div class="step-num">Step 1</div>
+                    <h4>📸 Take a photo or scan a barcode</h4>
+                    <p>
+                        Point your camera at fresh vegetables, fish, meat, or fruits — or scan the barcode of packaged
+                        food and cosmetics.
+                    </p>
+                </div>
+                <div class="step">
+                    <div class="step-num">Step 2</div>
+                    <h4>🤖 Gemini on GCP analyzes it</h4>
+                    <p>
+                        Our AI (Gemini + Google Cloud) reads labels, checks product type, and combines food science &
+                        health rules.
+                    </p>
+                </div>
+                <div class="step">
+                    <div class="step-num">Step 3</div>
+                    <h4>✅ Get simple, clear results</h4>
+                    <p>
+                        See how many days it stays good, where to store it, warnings (allergy, skin issues, sugar, etc.)
+                        and a quick health score.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FEATURES -->
+        <section id="features">
+            <h2 class="section-heading">Features for everyday shoppers</h2>
+            <p class="section-subtitle">
+                Designed for normal people, not scientists. Easy language, clean icons, and quick answers.
+            </p>
+
+            <div class="grid grid-2">
+                <article class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🍎</div>
+                        <div>
+                            <div class="card-title">Perishable food freshness</div>
+                            <div class="section-subtitle">
+                                Understand how long your fresh food will stay safe.
+                            </div>
+                        </div>
+                    </div>
+                    <ul style="margin-left:16px; margin-top:6px; font-size:12px; color:var(--text-soft);">
+                        <li>Predicts usable days for fruits, vegetables, fish, meat, etc.</li>
+                        <li>Shows best storage: fridge, freezer, or room temperature.</li>
+                        <li>Highlights “use today” vs “still okay for a few days”.</li>
+                    </ul>
+                    <div class="card-tag-row">
+                        <span class="chip-soft">Families & students</span>
+                        <span class="chip-soft">Avoid food waste</span>
+                    </div>
+                </article>
+
+                <article class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🏷️</div>
+                        <div>
+                            <div class="card-title">Barcode & label scan</div>
+                            <div class="section-subtitle">
+                                Understand what’s inside packaged food & cosmetics.
+                            </div>
+                        </div>
+                    </div>
+                    <ul style="margin-left:16px; margin-top:6px; font-size:12px; color:var(--text-soft);">
+                        <li>Scan barcode or take a picture of the ingredients list.</li>
+                        <li>AI reads and explains complex words in simple language.</li>
+                        <li>Flags high sugar, salt, additives, or harsh chemicals.</li>
+                    </ul>
+                    <div class="card-tag-row">
+                        <span class="chip-soft">Better decisions in 5 seconds</span>
+                        <span class="chip-soft">Works for imported products*</span>
+                    </div>
+                </article>
+
+                <article class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🧊</div>
+                        <div>
+                            <div class="card-title">Smart storage advice</div>
+                            <div class="section-subtitle">
+                                Avoid “I forgot it in the fridge” moments.
+                            </div>
+                        </div>
+                    </div>
+                    <ul style="margin-left:16px; margin-top:6px; font-size:12px; color:var(--text-soft);">
+                        <li>Shows ideal temperature range and shelf life.</li>
+                        <li>Explains when to freeze and how to thaw safely.</li>
+                        <li>Teaches simple rules you can remember next time.</li>
+                    </ul>
+                    <div class="card-tag-row">
+                        <span class="chip-soft">Helps reduce food waste</span>
+                        <span class="chip-soft">Good for weekly meal prep</span>
+                    </div>
+                </article>
+
+                <article class="card">
+                    <div class="card-header">
+                        <div class="card-icon">💚</div>
+                        <div>
+                            <div class="card-title">Health & allergy hints</div>
+                            <div class="section-subtitle">
+                                Not medical advice, but a friendly warning system.
+                            </div>
+                        </div>
+                    </div>
+                    <ul style="margin-left:16px; margin-top:6px; font-size:12px; color:var(--text-soft);">
+                        <li>Highlights potential triggers: sugar, salt, allergens, perfumes.</li>
+                        <li>Warns for sensitive groups: kids, pregnancy, skin conditions.</li>
+                        <li>Shows “green / yellow / red” style health impact indicator.</li>
+                    </ul>
+                    <div class="card-tag-row">
+                        <span class="chip-soft">Simple explanations</span>
+                        <span class="chip-soft">Everyday safety support</span>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- HEALTH & SAFETY -->
+        <section id="health">
+            <h2 class="section-heading">For both food & cosmetics</h2>
+            <p class="section-subtitle">
+                FreshScan AI helps you see risks early — before the product reaches your plate or your skin.
+            </p>
+
+            <div class="grid grid-2">
+                <article class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🥦</div>
+                        <div>
+                            <div class="card-title">Perishable products</div>
+                            <div class="section-subtitle">
+                                For vegetables, fruits, meat, fish, dairy and cooked food.
+                            </div>
+                        </div>
+                    </div>
+                    <ul style="margin-left:16px; margin-top:6px; font-size:12px; color:var(--text-soft);">
+                        <li>Estimate “safe to eat” days based on product type and visual clues.</li>
+                        <li>Warns when food looks unsafe (color, texture, visible mold).</li>
+                        <li>Shows basic food safety reminders (do not re-freeze, etc.).</li>
+                    </ul>
+                </article>
+
+                <article class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🧴</div>
+                        <div>
+                            <div class="card-title">Packaged & cosmetic items</div>
+                            <div class="section-subtitle">
+                                For snacks, drinks, creams, shampoos, makeup, and more.
+                            </div>
+                        </div>
+                    </div>
+                    <ul style="margin-left:16px; margin-top:6px; font-size:12px; color:var(--text-soft);">
+                        <li>Reads ingredient labels using OCR and Gemini.</li>
+                        <li>Marks common irritants, strong fragrances, or harsh chemicals.</li>
+                        <li>Helps you compare “gentler” vs “stronger” options on the shelf.</li>
+                    </ul>
+                </article>
+            </div>
+
+            <div class="audience-row">
+                <div class="audience-pill">👨‍👩‍👧 Families planning weekly groceries</div>
+                <div class="audience-pill">🎓 Students cooking on a budget</div>
+                <div class="audience-pill">💄 People with sensitive skin</div>
+                <div class="audience-pill">🛒 Anyone who hates throwing food away</div>
+            </div>
+        </section>
+
+        <!-- TECH SECTION -->
+        <section id="tech">
+            <h2 class="section-heading">Powered by Gemini & Google Cloud</h2>
+            <p class="section-subtitle">
+                Behind this simple interface, the app uses Google’s Gemini models, storage and APIs on Google Cloud
+                Platform.
+                You see only clear answers — the complex AI runs in the background.
+            </p>
+
+            <div class="grid grid-2">
+                <article class="card">
+                    <div class="card-header">
+                        <div class="card-icon">☁️</div>
+                        <div>
+                            <div class="card-title">AI + data pipeline</div>
+                            <div class="section-subtitle">
+                                Built for future growth and learning.
+                            </div>
+                        </div>
+                    </div>
+                    <ul style="margin-left:16px; margin-top:6px; font-size:12px; color:var(--text-soft);">
+                        <li>Images and barcodes are processed through secure APIs.</li>
+                        <li>Gemini interprets labels, text, and product types.</li>
+                        <li>Future plan: learn from user feedback to improve predictions.</li>
+                    </ul>
+                </article>
+
+                <article class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🔐</div>
+                        <div>
+                            <div class="card-title">Privacy first</div>
+                            <div class="section-subtitle">
+                                Built with respect for user data and local regulations.
+                            </div>
+                        </div>
+                    </div>
+                    <ul style="margin-left:16px; margin-top:6px; font-size:12px; color:var(--text-soft);">
+                        <li>Photos are used only to analyze the product, not your face.</li>
+                        <li>Planned: clear controls to delete your history anytime.</li>
+                        <li>No selling of personal data — the focus is on safety and learning.</li>
+                    </ul>
+                </article>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section id="faq">
+            <h2 class="section-heading">Frequently asked questions</h2>
+            <p class="section-subtitle">
+                Some important points about what FreshScan AI can and cannot do.
+            </p>
+
+            <div class="faq-list">
+                <div class="faq-item open">
+                    <button class="faq-question">
+                        <span class="q">❓ Is this medical advice or a doctor’s opinion?</span>
+                        <span class="faq-toggle">›</span>
+                    </button>
+                    <div class="faq-answer">
+                        FreshScan AI is <strong>not</strong> a doctor and <strong>not</strong> medical advice.
+                        It gives general safety and health impact hints based on product type and ingredients,
+                        but for allergies, diseases, or serious health questions you must follow professional
+                        medical advice and local food safety guidelines.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span class="q">📸 Will the app store my product photos?</span>
+                        <span class="faq-toggle">›</span>
+                    </button>
+                    <div class="faq-answer">
+                        In the planned design, photos are stored only as long as needed to give you a result.
+                        Later versions will give you full control to keep or delete your scan history. Faces are
+                        not the focus — the app looks only at the product and label.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span class="q">🌍 Which countries and languages will it support?</span>
+                        <span class="faq-toggle">›</span>
+                    </button>
+                    <div class="faq-answer">
+                        Early prototypes will focus on English and a small group of local markets.
+                        Because Gemini can read many languages, the goal is to support multiple label
+                        languages step by step.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span class="q">🧪 How accurate is the freshness prediction?</span>
+                        <span class="faq-toggle">›</span>
+                    </button>
+                    <div class="faq-answer">
+                        Freshness prediction is an <strong>estimate</strong>, based on product type, typical storage
+                        rules,
+                        and visible quality. Real-life conditions (temperature, transport, hygiene) can change things,
+                        so you should still use your senses and local food safety rules.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTACT / DOWNLOAD -->
+        <section id="contact">
+            <h2 class="section-heading">Get the app</h2>
+            <p class="section-subtitle">
+                GroceScan is in active development. When it’s live, you’ll be able to download it directly from the App
+                Store and Google Play.
+            </p>
+
+            <div class="contact-grid">
+                <form class="contact-card" onsubmit="event.preventDefault();">
+                    <div class="contact-note">
+                        Leave your email if you’d like updates about the public launch.
+                    </div>
+
+                    <div class="field">
+                        <label for="name">Name</label>
+                        <input id="name" name="name" placeholder="Your name" required />
+                    </div>
+
+                    <div class="field">
+                        <label for="email">Email</label>
+                        <input id="email" name="email" type="email" placeholder="you@example.com" required />
+                    </div>
+
+                    <div class="field">
+                        <label for="message">Anything you’d like to share?</label>
+                        <textarea id="message" name="message" placeholder="Feedback, ideas, or questions…"></textarea>
+                    </div>
+
+                    <!-- Store badges instead of 'Request early access' button -->
+                    <div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:10px; justify-content:flex-start;">
+                        <a href="#" class="store-badge">
+                            <span class="store-badge-icon"></span>
+                            <span class="store-badge-text">
+                                <span>Download on the</span>
+                                <span>App Store</span>
+                            </span>
+                        </a>
+
+                        <a href="#" class="store-badge">
+                            <span class="store-badge-icon">▶</span>
+                            <span class="store-badge-text">
+                                <span>Get it on</span>
+                                <span>Google Play</span>
+                            </span>
+                        </a>
+                    </div>
+
+                    <div class="contact-meta">
+                        These links are placeholders. Replace them with your real store URLs when the app is live.
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <footer>
+            <span>© <span id="year"></span> GroceScan AI. All rights reserved.</span>
+            <span>Built as a prototype using Gemini & Google Cloud Platform.</span>
+        </footer>
+    </main>
+
+    <script>
+        // Smooth scroll for nav buttons
+        document.querySelectorAll("[data-scroll]").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                var target = document.querySelector(btn.getAttribute("data-scroll"));
+                if (!target) return;
+                window.scrollTo({
+                    top: target.offsetTop - 70,
+                    behavior: "smooth",
+                });
+            });
+        });
+
+        // FAQ accordion
+        document.querySelectorAll(".faq-item").forEach(function (item) {
+            var question = item.querySelector(".faq-question");
+            question.addEventListener("click", function () {
+                var isOpen = item.classList.contains("open");
+                // Close others
+                document.querySelectorAll(".faq-item").forEach(function (i) {
+                    if (i !== item) i.classList.remove("open");
+                });
+                if (!isOpen) {
+                    item.classList.add("open");
+                } else {
+                    item.classList.remove("open");
+                }
+            });
+        });
+
+        // Year in footer
+        document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+</body>
+
+</html>
